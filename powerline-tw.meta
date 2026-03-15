@@ -10,7 +10,7 @@ base_url=https://raw.githubusercontent.com/linuxcaffe/powerline-taskwarrior/mast
 files=powerline-taskwarrior.install:script,README.md:doc:docs/powerline-taskwarrior_README.md
 tags=powerline,shell,prompt,context,segments
 
-checksums=7e098c2b6588ccccd742a95067ca6ca5b7d7194ddf7b75931eedcad68aca0dc1,baa6687154b274b5e306365c69f86282521d062e2aecfa31f3b3cfdcf84e07b5
+checksums=8a39e1d584279eb21d09d4ffe2c6a4dfe6b01ecc833fe2a605afd20705494374,baa6687154b274b5e306365c69f86282521d062e2aecfa31f3b3cfdcf84e07b5
 
 author=German Lashevich (upstream), linuxcaffe (fork)
 license=MIT
