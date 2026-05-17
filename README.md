@@ -91,6 +91,19 @@ These are available powerline-taskwarrior segments:
   }
   ```
 
+- display timeclock state (clocked-in account + elapsed time)
+  ```json
+  {
+      "function": "powerline_taskwarrior.timeclock",
+      "priority": 70
+  }
+  ```
+
+  Shows `⏱ account  1h 23m` when clocked in; nothing when clocked out.
+  Reads your timeclock file from `~/.task/config/timelog.rc` (`timelog.file` key)
+  or falls back to `~/.task/time/tw.timeclock`. No subprocess — reads the file
+  directly for minimal prompt latency.
+
 ### Color scheme
 
 Taskwarrior-powerline requires custom colorscheme to be configured.
@@ -104,10 +117,11 @@ Add the following to your colorschemes (`.config/powerline/colorschemes/default.
     "taskwarrior:active_id": { "bg": "mediumgreen", "fg": "black", "attrs": [] },
     "taskwarrior:active_desc": { "bg": "green", "fg": "black", "attrs": [] },
     "taskwarrior:next_id": { "bg": "brightyellow", "fg": "black", "attrs": [] },
-    "taskwarrior:next_desc": { "bg": "yellow", "fg": "black", "attrs": [] }
+    "taskwarrior:next_desc": { "bg": "yellow", "fg": "black", "attrs": [] },
+    "timeclock:in":      { "bg": "darkblue", "fg": "white",        "attrs": [] },
+    "timeclock:elapsed": { "bg": "darkblue", "fg": "brightyellow", "attrs": [] }
   }
 }
-
 ```
 
 And here you can configure the colors.

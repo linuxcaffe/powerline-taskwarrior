@@ -1,6 +1,9 @@
 # vim:fileencoding=utf-8:noet
+import os
 import string
 import shutil
+from datetime import datetime
+from pathlib import Path
 from subprocess import PIPE, Popen
 
 from powerline.segments import Segment, with_docstring
@@ -277,5 +280,61 @@ pending_tasks_count = with_docstring(
     It will show count of pending tasks.
 
     Highlight groups used: ``taskwarrior:next_id``, ``taskwarrior:next_desc``
+    """,
+)
+
+
+class TimeclockSegment(Segment):
+    def __call__(self, pl, segment_info=None, show_out=False):
+        rc = Path.home() / '.task/config/timelog.rc'
+        tc = Path.home() / '.task/time/tw.timeclock'
+        if rc.exists():
+            for line in rc.read_text().splitlines():
+                if line.startswith('timelog.file'):
+                    val = line.split('=', 1)[1].strip()
+                    tc = Path(os.path.expanduser(val))
+                    break
+
+        if not tc.exists():
+            return []
+
+        last_i = last_kind = None
+        for line in tc.read_text().splitlines():
+            if line.startswith('i '):
+                last_i = line; last_kind = 'i'
+            elif line.startswith('o '):
+                last_kind = 'o'
+
+        if last_kind != 'i' or not last_i:
+            return []
+
+        parts = last_i.split()
+        account = parts[3] if len(parts) > 3 else '?'
+        try:
+            start = datetime.strptime(f"{parts[1]} {parts[2]}", '%Y/%m/%d %H:%M:%S')
+            elapsed = max(0, int((datetime.now() - start).total_seconds()))
+        except Exception:
+            elapsed = 0
+
+        h, m = elapsed // 3600, (elapsed % 3600) // 60
+        elapsed_str = f'{h}h {m:02d}m' if h else f'{m}m'
+
+        return [
+            {'contents': f'⏱ {account}', 'highlight_groups': ['timeclock:in', 'information:regular']},
+            {'contents': elapsed_str, 'highlight_groups': ['timeclock:elapsed', 'information:regular']},
+        ]
+
+
+timeclock = with_docstring(
+    TimeclockSegment(),
+    """Show timeclock state from a ledger/hledger timeclock file.
+
+    Displays the current clocked-in account and elapsed time when active.
+    Returns nothing when clocked out.
+
+    Reads timeclock file from ~/.task/config/timelog.rc (timelog.file key)
+    or falls back to ~/.task/time/tw.timeclock.
+
+    Highlight groups used: ``timeclock:in``, ``timeclock:elapsed``
     """,
 )
